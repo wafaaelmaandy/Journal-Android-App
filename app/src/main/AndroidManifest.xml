@@ -15,13 +15,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".BasicJournalActivity"
             android:label="@string/title_activity_basic_journal"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" > </activity>
         <activity android:name=".SignInActivity" />
-        <activity android:name=".SignUpActivity"></activity>
+        <activity android:name=".SignUpActivity" />
+        <activity android:name=".AddEntryActivity" />
+        <activity android:name=".UpdateEntryActivity"> </activity>
     </application>
 
 </manifest>

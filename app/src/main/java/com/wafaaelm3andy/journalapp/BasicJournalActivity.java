@@ -1,12 +1,19 @@
 package com.wafaaelm3andy.journalapp;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,12 +21,17 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.List;
 
-public class BasicJournalActivity extends AppCompatActivity {
+public class BasicJournalActivity extends AppCompatActivity implements MyAdapter.ListItemClickListener {
 
     FirebaseAuth mAuth ;
     FirebaseAuth.AuthStateListener  mlistener;
+
+    RecyclerView recyclerView ;
+    MyAdapter adapter ;
+    SQLiteDatabase sqLiteDatabase ;
+    NoteDbHelper noteDbHelper=new NoteDbHelper(BasicJournalActivity.this);
+    SharedPreferences sharedPreferences  ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +44,9 @@ public class BasicJournalActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
+
+
+startActivity(new Intent(BasicJournalActivity.this,AddEntryActivity.class));            }
         });
 
         mAuth =FirebaseAuth.getInstance();
@@ -47,6 +59,83 @@ public class BasicJournalActivity extends AppCompatActivity {
 
             }
         };
+
+
+        recyclerView=(RecyclerView)findViewById(R.id.list_of_entries);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        sqLiteDatabase = noteDbHelper.getWritableDatabase();
+        Cursor cursor = getAllNotes();
+
+
+        adapter = new MyAdapter(cursor,BasicJournalActivity.this,BasicJournalActivity.this);
+        recyclerView.setAdapter(adapter);
+
+
+
+
+        sharedPreferences = getSharedPreferences("flag", Context.MODE_PRIVATE);
+
+
+
+
+
+
+
+
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+
+                long id = (long) viewHolder.itemView.getTag();
+
+                removeNote(id);
+
+                adapter.swapCursor(getAllNotes());
+            }
+
+        }).attachToRecyclerView(recyclerView);
+
+    }
+
+
+
+
+    @Override
+    public void onListItemClick(int clickedItemIndex ,long id ) {
+
+        sharedPreferences.edit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong("flag",id);
+        editor.apply();
+
+startActivity(new Intent(BasicJournalActivity.this,UpdateEntryActivity.class));
+
+    }
+
+    //get all notes
+    public Cursor getAllNotes(){
+        return sqLiteDatabase.query(
+                NoteContract.NotelistEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                NoteContract.NotelistEntry._ID
+        );
+    }
+
+
+
+    private boolean removeNote(long id) {
+        return sqLiteDatabase.delete(NoteContract.NotelistEntry.TABLE_NAME, NoteContract.NotelistEntry._ID + "=" + id, null) > 0;
     }
 
 
@@ -59,12 +148,9 @@ public class BasicJournalActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.actionLogout) {
             mAuth.signOut();
             startActivity( new Intent(BasicJournalActivity.this,SignInActivity.class));
@@ -86,5 +172,13 @@ public class BasicJournalActivity extends AppCompatActivity {
         if (mlistener != null) {
             mAuth.removeAuthStateListener(mlistener);
         }
+    }
+
+    //override on resume to update
+        @Override
+        public void onResume(){
+
+        super.onResume();
+            adapter.notifyItemRangeChanged(0, adapter.getItemCount());
     }
 }

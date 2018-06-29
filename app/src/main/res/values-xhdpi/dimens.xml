@@ -4,4 +4,5 @@
 	<dimen name="layout_margin">14.4dp</dimen>
 	<dimen name="layout_margin_Top">57.6dp</dimen>
 	<dimen name="email_felied">36dp</dimen>
+	<dimen name="text_size">12.6sp</dimen>
 </resources>
