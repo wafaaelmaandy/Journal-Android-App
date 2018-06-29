@@ -35,7 +35,6 @@ import java.util.Map;
 public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "Sign UP" ;
 
-    // todo تعريف المتغيرات
     EditText mEmail ,mPassword;
     FirebaseAuth mAuth ;
     FirebaseAuth.AuthStateListener  mListener;
@@ -96,7 +95,6 @@ public class SignUpActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             mProgressDialog.dismiss();
                             if(task.isSuccessful()){
-                                Toast.makeText(SignUpActivity.this,"sucess",Toast.LENGTH_SHORT).show();
                                 startActivity( new Intent(SignUpActivity.this,BasicJournalActivity.class));
 
                             }
@@ -146,8 +144,6 @@ public class SignUpActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(SignUpActivity.this,"sucess", Toast.LENGTH_SHORT).show();
-
                             startActivity(new Intent(SignUpActivity.this,BasicJournalActivity.class));
 
                             // updateUI(user);

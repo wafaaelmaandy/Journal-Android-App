@@ -6,9 +6,10 @@
     <color name="colorPrimary">#0097A7</color>
 
     <color name="colorPrimaryDark">#B2EBF2</color>
+    <color name="colorAccent2">#FF5722</color>
 
 
-    <color name="colorAccent">#FF5722</color>
+    <color name="colorAccent">#0097A7</color>
 
 
 

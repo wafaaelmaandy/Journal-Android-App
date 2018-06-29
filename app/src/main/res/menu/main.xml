@@ -6,9 +6,5 @@
         android:orderInCategory="100"
         android:title="@string/log_out"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/actionFavourite"
-        android:orderInCategory="100"
-        android:title="@string/favourite"
-        app:showAsAction="never" />
+
 </menu>
